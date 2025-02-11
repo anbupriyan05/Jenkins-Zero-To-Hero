@@ -1,21 +1,26 @@
-#!/bin/bash
+pipeline {
+    agent any
 
-# Update the system package list
-echo "Updating package list..."
-sudo apt update
+    stages {
+        stage('Install Python') {
+            steps {
+                script {
+                    // Run shell command to install Python
+                    echo "Updating system packages..."
+                    sh 'sudo apt update'
+                    
+                    echo "Installing Python..."
+                    sh 'sudo apt install -y python3 python3-pip'
 
-# Install Python 3
-echo "Installing Python 3..."
-sudo apt install -y python3
+                    // Verify Python installation
+                    echo "Verifying Python installation..."
+                    def pythonVersion = sh(script: 'python3 --version', returnStdout: true).trim()
+                    echo "Python version: ${pythonVersion}"
 
-# Install pip for Python 3
-echo "Installing pip for Python 3..."
-sudo apt install -y python3-pip
-
-# Verify installation
-echo "Verifying Python installation..."
-python3 --version
-pip3 --version
-
-# Python and pip installed successfully
-echo "Python 3 and pip installed successfully!"
+                    def pipVersion = sh(script: 'pip3 --version', returnStdout: true).trim()
+                    echo "Pip version: ${pipVersion}"
+                }
+            }
+        }
+    }
+}
